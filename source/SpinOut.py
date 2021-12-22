@@ -19,29 +19,12 @@ import math
 import time
 import variables
 import elements
-from classes import * #We can do this because the classes module contains only the necessary for this application
+import classes #We can do this because the classes module contains only the necessary for this application
 pygame.init()
 
-#Variable Definitions: Due to laziness, I chose to not search for and change every line to elements.foo
-ds_width = variables.ds_width
-ds_height = variables.ds_height
-
-white = variables.white
-black = variables.black
-mint = variables.mint
-
-allKnobs = elements.allKnobs
-mainBtns = elements.mainBtns
-ttlBtns = elements.ttlBtns
-rlsBtns = elements.rlsBtns
-optBtns = elements.optBtns
-againBtns = elements.againBtns
-
 #Setup display window
-ds = pygame.display.set_mode((ds_width, ds_height))
+ds = pygame.display.set_mode((variables.ds_width, variables.ds_height))
 pygame.display.set_caption('Spin It!')
-
-answer = variables.answer
 
 def checkKnobs(index): #Checks whether turning a knob would violate the rules
     check1 = False #Checks if the knob to the right is vertical or not --- False = not turning knob 0, True = turning knob 0
@@ -52,11 +35,11 @@ def checkKnobs(index): #Checks whether turning a knob would violate the rules
     if (index == 0):
         check3 = True
 
-    if allKnobs[index-1].state == 1: #Check if the knob to the right is 1 (vertical)
+    if elements.allKnobs[index-1].state == 1: #Check if the knob to the right is 1 (vertical)
         check1 = True
     
     for i in range(index-2,-1,-1): #Iterate through knobs
-        if allKnobs[i].state != 0:
+        if elements.allKnobs[i].state != 0:
             check2 = False
             break
 
@@ -75,9 +58,9 @@ def checkBtns(pos, lis):
     return val
 
 def dispKnobs():
-    num = len(allKnobs)
+    num = len(elements.allKnobs)
     for index in range(0 ,num):
-        ds.blit(allKnobs[index].img, (allKnobs[index].x, allKnobs[index].y))
+        ds.blit(elements.allKnobs[index].img, (elements.allKnobs[index].x, elements.allKnobs[index].y))
 
 def dispBtns(lis):
     num = len(lis)
@@ -86,16 +69,16 @@ def dispBtns(lis):
         
 def checkClick(pos):
     val = None
-    num = len(allKnobs)
+    num = len(elements.allKnobs)
     for index in range(num, -1, -1):
-        if allKnobs[index-1].rect.collidepoint(pos):
+        if elements.allKnobs[index-1].rect.collidepoint(pos):
             val = index-1
             break
     return val
 
 def checkWin():
     val = True
-    for knob in allKnobs:
+    for knob in elements.allKnobs:
         if knob.state == 1:
             val = False
     return val
@@ -111,9 +94,9 @@ def rlsScreen(): #Rules Screen
     goal = "Your goal is to turn every knob such that they are all horizontal"
     rule1 = "1) To turn a knob, the one to the immediate right must be vertical"
     rule2 = "2) Every knob to the right after that must be horizontal"
-    dispGoal = variables.largerFont.render(goal, 1, black) #(Str, Anti-ailiasing, color)
-    dispRule1 = variables.myFont.render(rule1, 1, black) #(Str, Anti-ailiasing, color)
-    dispRule2 = variables.myFont.render(rule2, 1, black) #(Str, Anti-ailiasing, color)
+    dispGoal = variables.largerFont.render(goal, 1, variables.black) #(Str, Anti-ailiasing, color)
+    dispRule1 = variables.myFont.render(rule1, 1, variables.black) #(Str, Anti-ailiasing, color)
+    dispRule2 = variables.myFont.render(rule2, 1, variables.black) #(Str, Anti-ailiasing, color)
 
     done = False
     while (not done):
@@ -124,7 +107,7 @@ def rlsScreen(): #Rules Screen
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    label = checkBtns(event.pos, rlsBtns)
+                    label = checkBtns(event.pos, elements.rlsBtns)
                     if (label == "Play"):
                         done = True
                     try:
@@ -134,12 +117,12 @@ def rlsScreen(): #Rules Screen
                     finally:
                         done = True
             
-        ds.fill(white)
-        dispBtns(rlsBtns)
+        ds.fill(variables.white)
+        dispBtns(elements.rlsBtns)
         
-        ds.blit(dispGoal, ((ds_width/2 - dispGoal.get_width()/2),25))
-        ds.blit(dispRule1, (ds_width/2 - dispRule1.get_width()/2, dispGoal.get_height() + 50))
-        ds.blit(dispRule2, (ds_width/2 - dispRule2.get_width()/2, dispRule1.get_height() + 75))
+        ds.blit(dispGoal, ((variables.ds_width/2 - dispGoal.get_width()/2),25))
+        ds.blit(dispRule1, (variables.ds_width/2 - dispRule1.get_width()/2, dispGoal.get_height() + 50))
+        ds.blit(dispRule2, (variables.ds_width/2 - dispRule2.get_width()/2, dispRule1.get_height() + 75))
         
         pygame.display.flip()
 
@@ -155,7 +138,7 @@ def titleScreen():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    label = checkBtns(event.pos, ttlBtns)
+                    label = checkBtns(event.pos, elements.ttlBtns)
                     try:
                         btnActions(label) 
                     except TypeError:
@@ -164,8 +147,8 @@ def titleScreen():
                         play = True
                         continue
             
-        ds.fill(white)
-        dispBtns(ttlBtns)
+        ds.fill(variables.white)
+        dispBtns(elements.ttlBtns)
         ds.blit(introLogo,(0,0))
         pygame.display.flip()
 
@@ -180,7 +163,7 @@ def optScreen():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    label = checkBtns(event.pos, optBtns)
+                    label = checkBtns(event.pos, elements.optBtns)
                     try:
                         btnActions(label) 
                     except TypeError:
@@ -189,8 +172,8 @@ def optScreen():
                         if (label == "Title Screen"):
                             play = True
             
-        ds.fill(white)
-        dispBtns(optBtns)
+        ds.fill(variables.white)
+        dispBtns(elements.optBtns)
         pygame.display.flip()
 
 def playAgainScreen():
@@ -205,7 +188,7 @@ def playAgainScreen():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    label = checkBtns(event.pos, againBtns)
+                    label = checkBtns(event.pos, elements.againBtns)
                     try:
                         btnActions(label) 
                     except TypeError:
@@ -213,8 +196,8 @@ def playAgainScreen():
                     finally:
                         play = True
             
-        ds.fill(white)
-        dispBtns(againBtns)
+        ds.fill(variables.white)
+        dispBtns(elements.againBtns)
         pygame.display.flip()
 
 def btnActions(label):
@@ -240,14 +223,14 @@ def btnActions(label):
         pass
             
 def resetKnobs():
-    for knob in allKnobs:
+    for knob in elements.allKnobs:
         if knob.state == 0:
             knob.rotate()
             knob.state = 1
 
 def restart():
     global score
-    for knob in allKnobs:
+    for knob in elements.allKnobs:
         if knob.state == 0:
             knob.rotate()
             knob.state = 1
@@ -267,20 +250,20 @@ def mainGame():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     index = checkClick(event.pos) #Tuple (x,y) for knobs
-                    label = checkBtns(event.pos, mainBtns) #For buttons in main game
+                    label = checkBtns(event.pos, elements.mainBtns) #For buttons in main game
                     try:
                         btnActions(label)
                         if checkKnobs(index) == True:
                             score += 1
                             
                             #Changes the requested knob
-                            allKnobs[index].switchState()
+                            elements.allKnobs[index].switchState()
                             #Rotates knob image
-                            allKnobs[index].rotate()
+                            elements.allKnobs[index].rotate()
                             #While loop will finish and not repeat
                             Solved = checkWin()
 
-                            options.terminalOutput(allKnobs)
+                            options.terminalOutput(elements.allKnobs)
                             if Solved == True:
                                 ds.blit(youWin,(0,0))
                                 pygame.display.flip()
@@ -298,13 +281,13 @@ def mainGame():
                             Solved = True
 
                 
-        ds.fill(white)
+        ds.fill(variables.white)
         
         #Display knobs & buttons
         dispKnobs()
-        dispBtns(mainBtns)
+        dispBtns(elements.mainBtns)
 
-        diScore = variables.scoreFont.render(str(score), 1, black) #(Str, Anti-ailiasing, color)
+        diScore = variables.scoreFont.render(str(score), 1, variables.black) #(Str, Anti-ailiasing, color)
         ds.blit(diScore,(0,0))#(223 - diScore.get_width(),0))
 
         #Displays all changes made between the screen being filled and now
@@ -313,15 +296,15 @@ def mainGame():
 
 numKnobs = 5
 
-options = Options()
+options = classes.Options()
 
 for number in range(0,numKnobs):
-    allKnobs.append( Knob(number) ) #Creates the knob objects with correct x position
+    elements.allKnobs.append( classes.Knob(number) ) #Creates the knob objects with correct x position
 
-allKnobs.reverse() #Reverses list since we're using right to left logic (images and checks)
+elements.allKnobs.reverse() #Reverses list since we're using right to left logic (images and checks)
 
 options.showAnswer()
-options.terminalOutput(allKnobs) #Prints the first stage i.e. 1 1 1 1 1
+options.terminalOutput(elements.allKnobs) #Prints the first stage i.e. 1 1 1 1 1
 
 score = 0
 
