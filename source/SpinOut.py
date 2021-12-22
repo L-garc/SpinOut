@@ -11,122 +11,37 @@ to turn a knob the knob to the immediate right must be a 1 (vertical) and every 
 1.4 - Added Rules page, modded some functions
 1.5 - Title Screen Logo, Fixed bug where after winning you'd go to title screen or rules screen
 1.6 - Added Play Again screen, invalid move indicator, Option to output to terminal for teachers/professors
+1.7 - Organized code into seperate files
 '''
 
 import pygame
 import math
 import time
+import variables
+import elements
+from classes import * #We can do this because the classes module contains only the necessary for this application
 pygame.init()
 
-#Cannot use one object and later change the font or size, must create new object for new font or font size
-myFont = pygame.font.SysFont("calibri", 15)
-largerFont = pygame.font.SysFont("calibri", 24)
-scoreFont = pygame.font.SysFont("calibri", 20)
+#Variable Definitions: Due to laziness, I chose to not search for and change every line to elements.foo
+ds_width = variables.ds_width
+ds_height = variables.ds_height
 
-#Variable Definitions
-ds_width = 148*5 # Picked because each knob image is 148 x 148 images
-ds_height = 148 + 75 # "+ 75" is for the space below the knobs for the buttons
+white = variables.white
+black = variables.black
+mint = variables.mint
 
-white = (255, 255, 255)
-black = (0, 0, 0)
-mint = (62, 180, 137)
+allKnobs = elements.allKnobs
+mainBtns = elements.mainBtns
+ttlBtns = elements.ttlBtns
+rlsBtns = elements.rlsBtns
+optBtns = elements.optBtns
+againBtns = elements.againBtns
 
 #Setup display window
 ds = pygame.display.set_mode((ds_width, ds_height))
 pygame.display.set_caption('Spin It!')
 
-answer = """
-The least required moves are:
-
-1 1 1 1 1
-1 1 1 1 0
-1 1 0 1 0
-1 1 0 1 1
-1 1 0 0 1
-1 1 0 0 0
-0 1 0 0 0
-0 1 0 0 1
-0 1 0 1 1
-0 1 0 1 0
-0 1 1 1 0
-0 1 1 1 1
-0 1 1 0 1
-0 1 1 0 0
-0 0 1 0 0
-0 0 1 0 1
-0 0 1 1 1
-0 0 1 1 0
-0 0 0 1 0
-0 0 0 1 1
-0 0 0 0 1
-0 0 0 0 0
-
-This is 21 Moves
-         """
-
-
-class Knob:
-    def __init__(self, number):
-        self.state = 1 #.................................................Vertical, all knobs begin in the vertical position
-        self.img = pygame.image.load('knob.png') #.......................Loads into memory knob image
-        self.w = 148 #...................................................Image width
-        self.h = 148 #...................................................Image Height
-        self.x = number*(self.w) #.......................................X position of knob based on order created (first knob created at x pos 0)
-        self.y = 0 #.....................................................Y pos is always along the top of the screen at y pos 0
-        self.rect = pygame.Rect(self.x, self.y, self.w, self.h) #........Creates rectange at (x,y) with width (w) & height (h)
-        self.index = 4-number #..........................................First knob created at x pos 0 is actually knob index 4 since python is zero-index, and we are using right to left logic (x = 0 is left side of screen)
-
-        #print("knob index ", self.index, " created at x = ", self.x)#....Checks if the correct index is assosciated with the correct knob object (left most = 4, right most = 0)
-
-    def switchState(self):
-        if self.state == 1: #Switch from 1 to 0
-            self.state = 0
-            
-        elif self.state == 0: #Switch from 0 to 1
-            self.state = 1
-
-    def rotate(self): #Rotate knob image
-        self.img = pygame.transform.rotate(self.img, 90)
-
-class button:
-    def __init__(self, label, pos, size, color): #label = "Example Name" pos = (x,y) size = (w,h) color = (r,g,b)
-        self.label = label
-        self.x, self.y = pos
-        self.w, self.h = size
-        self.color = color
-        self.rect = pygame.Rect(self.x, self.y, self.w, self.h)
-        self.dispLabel = myFont.render(label, 1, black) #(Str, True, color) no idea what the true is for
-
-    def disp(self):
-        pygame.draw.rect(ds, self.color, self.rect)
-
-        self.dlRect = self.dispLabel.get_rect()
-        self.center = ((self.x + self.w/2)-self.dlRect.w/2,(self.y + self.h/2)-self.dlRect.h/2) #Center's Text to button center (text (x,y) is defined at top left corner)
-        ds.blit(self.dispLabel, self.center)
-
-class Options:
-    def __init__(self):
-        self.TchrMd = True #Teacher/student mode, shows terminal output for easier recursion analysis
-        self.dispAnswer = False #Shows the steps to solving the game in the terminal
-        self.shown = False
-
-    def showAnswer(self):
-        if ((self.dispAnswer == True) and (self.shown == False)):
-            self.shown = True
-            print(answer)
-        
-    def terminalOutput(self):
-        if (self.TchrMd == True):
-            print(allKnobs[4].state, allKnobs[3].state ,allKnobs[2].state, allKnobs[1].state, allKnobs[0].state)
-
-    def chngOption(self, label):
-        if (label == "Teacher / Student"):
-            if (self.TchrMd == False):
-                self.TchrMd = True
-                
-        elif (label == "Game Only"):
-            if (self.TchrMd == True):
-                self.TchrMd = False
+answer = variables.answer
 
 def checkKnobs(index): #Checks whether turning a knob would violate the rules
     check1 = False #Checks if the knob to the right is vertical or not --- False = not turning knob 0, True = turning knob 0
@@ -167,7 +82,7 @@ def dispKnobs():
 def dispBtns(lis):
     num = len(lis)
     for index in range(0, num):
-        lis[index].disp()
+        lis[index].disp(ds)
         
 def checkClick(pos):
     val = None
@@ -196,9 +111,9 @@ def rlsScreen(): #Rules Screen
     goal = "Your goal is to turn every knob such that they are all horizontal"
     rule1 = "1) To turn a knob, the one to the immediate right must be vertical"
     rule2 = "2) Every knob to the right after that must be horizontal"
-    dispGoal = largerFont.render(goal, 1, black) #(Str, Anti-ailiasing, color)
-    dispRule1 = myFont.render(rule1, 1, black) #(Str, Anti-ailiasing, color)
-    dispRule2 = myFont.render(rule2, 1, black) #(Str, Anti-ailiasing, color)
+    dispGoal = variables.largerFont.render(goal, 1, black) #(Str, Anti-ailiasing, color)
+    dispRule1 = variables.myFont.render(rule1, 1, black) #(Str, Anti-ailiasing, color)
+    dispRule2 = variables.myFont.render(rule2, 1, black) #(Str, Anti-ailiasing, color)
 
     done = False
     while (not done):
@@ -365,7 +280,7 @@ def mainGame():
                             #While loop will finish and not repeat
                             Solved = checkWin()
 
-                            options.terminalOutput()
+                            options.terminalOutput(allKnobs)
                             if Solved == True:
                                 ds.blit(youWin,(0,0))
                                 pygame.display.flip()
@@ -389,7 +304,7 @@ def mainGame():
         dispKnobs()
         dispBtns(mainBtns)
 
-        diScore = scoreFont.render(str(score), 1, black) #(Str, Anti-ailiasing, color)
+        diScore = variables.scoreFont.render(str(score), 1, black) #(Str, Anti-ailiasing, color)
         ds.blit(diScore,(0,0))#(223 - diScore.get_width(),0))
 
         #Displays all changes made between the screen being filled and now
@@ -397,35 +312,6 @@ def mainGame():
 #============================================================================================================================
 
 numKnobs = 5
-
-allKnobs = [] #Holds all knobs in this list
-mainBtns = [] #Holds main buttons such as reset or restart
-ttlBtns = []  #Holds title screen buttons
-rlsBtns = []  #Holds rule screen buttons
-optBtns = []  #Holds options screen buttons
-againBtns = []#Holds "play again?" screen buttons
-
-#label = "Example Name" pos = (x,y) size = (w,h) color = (r,g,b)
-mainBtns.append(button("Reset", (25, 173), (205, 25), mint))
-mainBtns.append(button("Restart", (255, 173), (205, 25), mint))
-mainBtns.append(button("Quit", (485, 173), (205, 25), mint))
-
-ttlBtns.append(button("Play", (25, 173), (153.75, 25), mint))
-ttlBtns.append(button("Rules", (203.75, 173), (153.75, 25), mint))
-ttlBtns.append(button("Options", (382.5, 173), (153.75, 25), mint))
-ttlBtns.append(button("Quit", (561.25, 173), (153.75, 25), mint))
-
-rlsBtns.append(button("Play", (25, 173), (332.5, 25), mint))
-rlsBtns.append(button("Quit", (382.5, 173), (332.5, 25), mint))
-
-againBtns.append(button("Title Screen", (25, 25), (100, 25), mint))
-againBtns.append(button("Play", (100, (223/3)), (540, 25), mint))
-againBtns.append(button("Quit", (100, (371/3)), (540, 25), mint))
-
-optBtns.append(button("Title Screen", (25, 25), (100, 25), mint))
-optBtns.append(button("Teacher / Student", (100, (223/3)), (540, 25), mint))
-optBtns.append(button("Game Only", (100, (371/3)), (540, 25), mint))
-optBtns.append(button("Quit", (615, 173), (100, 25), mint))
 
 options = Options()
 
@@ -435,7 +321,7 @@ for number in range(0,numKnobs):
 allKnobs.reverse() #Reverses list since we're using right to left logic (images and checks)
 
 options.showAnswer()
-options.terminalOutput() #Prints the first stage i.e. 1 1 1 1 1
+options.terminalOutput(allKnobs) #Prints the first stage i.e. 1 1 1 1 1
 
 score = 0
 
