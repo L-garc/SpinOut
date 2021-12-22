@@ -296,19 +296,19 @@ def mainGame():
 
 numKnobs = 5
 
-options = classes.Options()
+options = classes.Options() #Options() is a class defined in the class module
 
 for number in range(0,numKnobs):
     elements.allKnobs.append( classes.Knob(number) ) #Creates the knob objects with correct x position
 
 elements.allKnobs.reverse() #Reverses list since we're using right to left logic (images and checks)
 
-options.showAnswer()
+options.showAnswer() #If the option for this is set to true, it will print the steps to solve a 5 knob game
 options.terminalOutput(elements.allKnobs) #Prints the first stage i.e. 1 1 1 1 1
 
 score = 0
 
 titleScreen()
 
-#Close the program   
+#Close the program
 pygame.quit()
