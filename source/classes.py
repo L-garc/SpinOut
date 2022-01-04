@@ -43,7 +43,7 @@ class button:
 
 class Options:
     def __init__(self):
-        self.TchrMd = True #Teacher/student mode, shows terminal output for easier recursion analysis
+        self.TchrMd = False #Teacher/student mode, shows terminal output for easier recursion analysis
         self.dispAnswer = False #Shows the steps to solving the game in the terminal
         self.shown = False
 
