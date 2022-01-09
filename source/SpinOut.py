@@ -27,6 +27,17 @@ pygame.init()
 ds = pygame.display.set_mode((variables.ds_width, variables.ds_height))
 pygame.display.set_caption('Spin It!')
 
+allKnobs = []
+
+def createKnobs(numKnobs):
+    if (len(allKnobs) > 0):
+        globals()['allKnobs'] = []
+        
+    for number in range(0,numKnobs):
+        allKnobs.append( classes.Knob(number) ) #Creates the knob objects with correct x position
+
+    allKnobs.reverse() #Reverses list since we're using right to left logic (images and checks)
+
 def checkKnobs(index): #Checks whether turning a knob would violate the rules
     check1 = False #Checks if the knob to the right is vertical or not --- False = not turning knob 0, True = turning knob 0
     check2 = True #Checks if every knob after check1 is horizontal or not --- False = some knob to the right is vertical (1)
@@ -36,11 +47,11 @@ def checkKnobs(index): #Checks whether turning a knob would violate the rules
     if (index == 0):
         check3 = True
 
-    if elements.allKnobs[index-1].state == 1: #Check if the knob to the right is 1 (vertical)
+    if allKnobs[index-1].state == 1: #Check if the knob to the right is 1 (vertical)
         check1 = True
     
-    for i in range(index-2,-1,-1): #Iterate through knobs
-        if elements.allKnobs[i].state != 0:
+    for i in range(index-2,-1,-1):
+        if allKnobs[i].state != 0:
             check2 = False
             break
 
@@ -59,9 +70,9 @@ def checkBtns(pos, lis):
     return val
 
 def dispKnobs():
-    num = len(elements.allKnobs)
+    num = len(allKnobs)
     for index in range(0 ,num):
-        ds.blit(elements.allKnobs[index].img, (elements.allKnobs[index].x, elements.allKnobs[index].y))
+        ds.blit(allKnobs[index].img, (allKnobs[index].x, allKnobs[index].y))
 
 def dispBtns(lis):
     num = len(lis)
@@ -70,16 +81,16 @@ def dispBtns(lis):
         
 def checkClick(pos):
     val = None
-    num = len(elements.allKnobs)
+    num = len(allKnobs)
     for index in range(num, -1, -1):
-        if elements.allKnobs[index-1].rect.collidepoint(pos):
+        if allKnobs[index-1].rect.collidepoint(pos):
             val = index-1
             break
     return val
 
 def checkWin():
     val = True
-    for knob in elements.allKnobs:
+    for knob in allKnobs:
         if knob.state == 1:
             val = False
     return val
@@ -201,6 +212,28 @@ def playAgainScreen():
         dispBtns(elements.againBtns)
         pygame.display.flip()
 
+def strtScrn():
+    play = False
+    while (not play):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                play = True
+                quit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    label = checkBtns(event.pos, elements.strtBtns)
+                    try:
+                        btnActions(label) 
+                    except TypeError:
+                        pass
+                    finally:
+                        play = True
+            
+        ds.fill(variables.white)
+        dispBtns(elements.strtBtns)
+        pygame.display.flip()
+
 def btnActions(label):
     global Solved
 
@@ -212,6 +245,19 @@ def btnActions(label):
         rlsScreen()
     elif (label == "Play"):
         mainGame()
+    elif (label == "Play Again"):
+        strtScrn()
+        #createKnobs()
+        mainGame()
+    elif (label == "3"):
+        #globals()['numKnobs'] = 3
+        createKnobs(3)
+    elif (label == "4"):
+        #globals()['numKnobs'] = 4
+        createKnobs(4)
+    elif (label == "5"):
+        #globals()['numKnobs'] = 5
+        createKnobs(5)
     elif (label == "Options"):
         optScreen()
     elif (label == "Title Screen"):
@@ -224,14 +270,14 @@ def btnActions(label):
         pass
             
 def resetKnobs():
-    for knob in elements.allKnobs:
+    for knob in allKnobs:
         if knob.state == 0:
             knob.rotate()
             knob.state = 1
 
 def restart():
     global score
-    for knob in elements.allKnobs:
+    for knob in allKnobs:
         if knob.state == 0:
             knob.rotate()
             knob.state = 1
@@ -258,13 +304,13 @@ def mainGame():
                             score += 1
                             
                             #Changes the requested knob
-                            elements.allKnobs[index].switchState()
+                            allKnobs[index].switchState()
                             #Rotates knob image
-                            elements.allKnobs[index].rotate()
+                            allKnobs[index].rotate()
                             #While loop will finish and not repeat
                             Solved = checkWin()
 
-                            options.terminalOutput(elements.allKnobs)
+                            options.terminalOutput(allKnobs)
                             if Solved == True:
                                 ds.blit(youWin,(0,0))
                                 pygame.display.flip()
@@ -295,17 +341,14 @@ def mainGame():
         pygame.display.flip()
 #============================================================================================================================
 
-numKnobs = 5
+strtScrn()
 
 options = classes.Options() #Options() is a class defined in the class module
-
-for number in range(0,numKnobs):
-    elements.allKnobs.append( classes.Knob(number) ) #Creates the knob objects with correct x position
-
-elements.allKnobs.reverse() #Reverses list since we're using right to left logic (images and checks)
+    
+#createKnobs()
 
 options.showAnswer() #If the option for this is set to true, it will print the steps to solve a 5 knob game
-options.terminalOutput(elements.allKnobs) #Prints the first stage i.e. 1 1 1 1 1
+options.terminalOutput(allKnobs) #Prints the first stage i.e. 1 1 1 1 1
 
 score = 0
 
