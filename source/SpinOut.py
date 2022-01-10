@@ -20,14 +20,14 @@ import math
 import time
 import variables
 import elements
-import classes #We can do this because the classes module contains only the necessary for this application
+import classes
 pygame.init()
 
 #Setup display window
 ds = pygame.display.set_mode((variables.ds_width, variables.ds_height))
 pygame.display.set_caption('Spin It!')
 
-allKnobs = []
+allKnobs = [] #Having this defined in another module caused an issue where it could append but not clear the list
 
 def createKnobs(numKnobs):
     if (len(allKnobs) > 0):
@@ -127,7 +127,8 @@ def rlsScreen(): #Rules Screen
                     except TypeError:
                         pass
                     finally:
-                        done = True
+                        if (label != None):
+                            done = True
             
         ds.fill(variables.white)
         dispBtns(elements.rlsBtns)
@@ -138,8 +139,8 @@ def rlsScreen(): #Rules Screen
         
         pygame.display.flip()
 
-def titleScreen():
-    introLogo = pygame.image.load('IntroLogo.png')
+def titleScreen(): #After pressing quit anywhere you return here and the next line to run is except... which gets ignored
+    introLogo = pygame.image.load('IntroLogo.png')  #this is why the title screen is visible for a short time before ending the program
     
     play = False
     while (not play):
@@ -153,11 +154,12 @@ def titleScreen():
                     label = checkBtns(event.pos, elements.ttlBtns)
                     try:
                         btnActions(label) 
-                    except TypeError:
+                    except TypeError: #In testing a TypeError exception was never raised even when I expected there to be one
                         pass
                     finally:
-                        play = True
-                        continue
+                        if (label == "Quit"):
+                            play = True
+                            continue #This must be here for some reason or else the program will not close when you click "Quit"
             
         ds.fill(variables.white)
         dispBtns(elements.ttlBtns)
@@ -181,7 +183,7 @@ def optScreen():
                     except TypeError:
                         pass
                     finally:
-                        if (label == "Title Screen"):
+                        if (label == "Title Screen" or "Quit"):
                             play = True
             
         ds.fill(variables.white)
@@ -206,7 +208,8 @@ def playAgainScreen():
                     except TypeError:
                         pass
                     finally:
-                        play = True
+                        if (label != None): # Label should only ever be "not None" if you click a button
+                            play = True
             
         ds.fill(variables.white)
         dispBtns(elements.againBtns)
@@ -228,7 +231,8 @@ def strtScrn():
                     except TypeError:
                         pass
                     finally:
-                        play = True
+                        if (label != None):
+                            play = True
             
         ds.fill(variables.white)
         dispBtns(elements.strtBtns)
@@ -247,16 +251,12 @@ def btnActions(label):
         mainGame()
     elif (label == "Play Again"):
         strtScrn()
-        #createKnobs()
         mainGame()
-    elif (label == "3"):
-        #globals()['numKnobs'] = 3
+    elif (label == "3 Knobs"):
         createKnobs(3)
-    elif (label == "4"):
-        #globals()['numKnobs'] = 4
+    elif (label == "4 Knobs"):
         createKnobs(4)
-    elif (label == "5"):
-        #globals()['numKnobs'] = 5
+    elif (label == "5 Knobs"):
         createKnobs(5)
     elif (label == "Options"):
         optScreen()
@@ -264,6 +264,8 @@ def btnActions(label):
         titleScreen()
     elif (label == "Quit"):
         EndScreen()
+        pygame.quit()
+        quit()
     elif (label == "Teacher / Student" or "Game Only"):
         options.chngOption(label)
     else:
@@ -287,6 +289,9 @@ def mainGame():
     global score
     invalidMove = pygame.image.load('InvalidMoveIndicatorOverLay.png')
     youWin = pygame.image.load('YouWin.png')
+    
+    options.terminalOutput(allKnobs) #Prints initial state, where every knob state is 1
+    
     Solved = False
 
     while (not Solved):
@@ -335,20 +340,17 @@ def mainGame():
         dispBtns(elements.mainBtns)
 
         diScore = variables.scoreFont.render(str(score), 1, variables.black) #(Str, Anti-ailiasing, color)
-        ds.blit(diScore,(0,0))#(223 - diScore.get_width(),0))
+        ds.blit(diScore,(0,0))
 
         #Displays all changes made between the screen being filled and now
         pygame.display.flip()
 #============================================================================================================================
 
+options = classes.Options() #Options() is a class defined in the class module
+
 strtScrn()
 
-options = classes.Options() #Options() is a class defined in the class module
-    
-#createKnobs()
-
 options.showAnswer() #If the option for this is set to true, it will print the steps to solve a 5 knob game
-options.terminalOutput(allKnobs) #Prints the first stage i.e. 1 1 1 1 1
 
 score = 0
 

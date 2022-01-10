@@ -1,7 +1,6 @@
 from classes import *
 from variables import mint
 
-allKnobs = [] #Holds all knobs in this list
 strtBtns = []  #Holds start screen buttons (sets number of knobs in game)
 mainBtns = [] #Holds main buttons such as reset or restart
 ttlBtns = []  #Holds title screen buttons
@@ -10,9 +9,9 @@ optBtns = []  #Holds options screen buttons
 againBtns = []#Holds "play again?" screen buttons
 
 #label = "Example Name" pos = (x,y) size = (w,h) color = (r,g,b)
-strtBtns.append(button("3", (25, 25), (100, 25), mint))
-strtBtns.append(button("4", (175, 25), (100, 25), mint))
-strtBtns.append(button("5", (325, 25), (100, 25), mint))
+strtBtns.append(button("3 Knobs", (91.25, 49), (125, 125), mint))
+strtBtns.append(button("4 Knobs", (307.5, 49), (125, 125), mint))
+strtBtns.append(button("5 Knobs", (523.75, 49), (125, 125), mint))
 
 mainBtns.append(button("Reset", (25, 173), (205, 25), mint))
 mainBtns.append(button("Restart", (255, 173), (205, 25), mint))
