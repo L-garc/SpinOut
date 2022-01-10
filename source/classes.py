@@ -1,5 +1,6 @@
 import pygame
 from variables import myFont, black
+from variables import file, config
 pygame.init()
 
 class Knob:
@@ -41,7 +42,12 @@ class button:
 
 class Options:
     def __init__(self):
-        self.TchrMd = False #Teacher/student mode, shows terminal output for easier recursion analysis
+        self.val = config['options']['Teacher / Student'] #Teacher/student mode, shows terminal output for easier recursion analysis
+        if self.val == "False":
+            self.TchrMd = False
+        elif self.val == "True":
+            self.TchrMd = True
+
         self.dispAnswer = False #Shows the steps to solving the game in the terminal
         self.shown = False
 
@@ -58,15 +64,20 @@ class Options:
                 temp.append(knob.state)
                 
             temp.reverse()
-            print(*temp)
+            print(*temp) #The asterisk means print just prints as a list what is in temp
 
     def chngOption(self, label):
         if (label == "Teacher / Student"):
             if (self.TchrMd == False):
                 self.TchrMd = True
+                config.set('options', 'Teacher / Student', 'True')
                 print("Teacher / Student Mode activated \n")
                 
         elif (label == "Game Only"):
             if (self.TchrMd == True):
                 self.TchrMd = False
+                config.set('options', 'Teacher / Student', 'False')
                 print("Game Only Mode activated \n")
+                
+        with open(file, 'w') as configfile:
+                    config.write( configfile )

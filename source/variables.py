@@ -1,5 +1,10 @@
 import pygame
+from configparser import ConfigParser
 pygame.init()
+
+file = 'config.ini'
+config = ConfigParser()
+config.read( file )
 
 #Cannot use one object and later change the font or size, must create new object for new font or font size
 myFont = pygame.font.SysFont("calibri", 15)
