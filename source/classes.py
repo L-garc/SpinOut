@@ -13,8 +13,6 @@ class Knob:
         self.rect = pygame.Rect(self.x, self.y, self.w, self.h) #........Creates rectange at (x,y) with width (w) & height (h)
         self.index = 4-number #..........................................First knob created at x pos 0 is actually knob index 4 since python is zero-index, and we are using right to left logic (x = 0 is left side of screen)
 
-        #print("knob index ", self.index, " created at x = ", self.x)#....Checks if the correct index is assosciated with the correct knob object (left most = 4, right most = 0)
-
     def switchState(self):
         if self.state == 1: #Switch from 1 to 0
             self.state = 0
@@ -54,13 +52,21 @@ class Options:
         
     def terminalOutput(self, allKnobs):
         if (self.TchrMd == True):
-            print(allKnobs[4].state, allKnobs[3].state ,allKnobs[2].state, allKnobs[1].state, allKnobs[0].state)
+            temp = []
+            
+            for knob in allKnobs:
+                temp.append(knob.state)
+                
+            temp.reverse()
+            print(*temp)
 
     def chngOption(self, label):
         if (label == "Teacher / Student"):
             if (self.TchrMd == False):
                 self.TchrMd = True
+                print("Teacher / Student Mode activated \n")
                 
         elif (label == "Game Only"):
             if (self.TchrMd == True):
                 self.TchrMd = False
+                print("Game Only Mode activated \n")
