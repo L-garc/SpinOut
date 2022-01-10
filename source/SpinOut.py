@@ -4,15 +4,6 @@ Author: Luis A. Garcia
 
 rules:
 to turn a knob the knob to the immediate right must be a 1 (vertical) and every knob right of that must be 0 (horizontal)
-
-1.1 - Added win condition
-1.2 - Added functioning buttons
-1.3 - Added Title Screen
-1.4 - Added Rules page, modded some functions
-1.5 - Title Screen Logo, Fixed bug where after winning you'd go to title screen or rules screen
-1.6 - Added Play Again screen, invalid move indicator, Option to output to terminal for teachers/professors
-1.7 - Organized code into seperate files
-1.8 - Default to game only mode, toggleable to recursion/teacher/student mode
 '''
 
 import pygame

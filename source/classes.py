@@ -1,6 +1,7 @@
 import pygame
 from variables import myFont, black
 from variables import file, config
+import os.path
 pygame.init()
 
 class Knob:
@@ -42,6 +43,19 @@ class button:
 
 class Options:
     def __init__(self):
+        if os.path.exists("config.ini") == False:
+            newFile = open("config.ini", "w")
+            newFile.close()
+
+            file = 'config.ini'
+            config.read( file )
+
+            config.add_section('options')
+            config.set('options', 'Teacher / Student', 'False')
+
+            with open(file, 'a') as configfile:
+                config.write(configfile)
+
         self.val = config['options']['Teacher / Student'] #Teacher/student mode, shows terminal output for easier recursion analysis
         if self.val == "False":
             self.TchrMd = False
