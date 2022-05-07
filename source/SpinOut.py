@@ -232,8 +232,8 @@ def strtScrn():
 def btnActions(label):
     global Solved
 
-    if (label == "Reset"):
-        resetKnobs()
+    if (label == "Undo"):
+        undo()
     elif (label == "Restart"):
         restart()
     elif (label == "Rules"):
@@ -265,16 +265,32 @@ def btnActions(label):
 def resetKnobs():
     for knob in allKnobs:
         if knob.state == 0:
-            knob.rotate()
+            knob.rotate(True)
             knob.state = 1
 
 def restart():
     global score
     for knob in allKnobs:
         if knob.state == 0:
-            knob.rotate()
+            knob.rotate(True) #Passing true means it will reset all knobs to vertical, (some may need to move CCW when they used to move CW)
             knob.state = 1
     score = 0
+    
+def undo():
+    global score
+    
+    if score > 0: #If score is greater than zero (no negative scores)
+        score -= 1 #Decrement score counter
+    
+    GameState = options.prevMoves(1)
+    options.popPrevMoves(0) #Delete the current state, effectively means last move is now current move
+    print("Game State = ", GameState)
+    
+    for i in range(0, len(GameState)):
+        if allKnobs[i].state != GameState[i]: #If the current state of the knob is not the same as its prev state, rotate CW or CCW
+            allKnobs[i].state = GameState[i] #Set the knob state to whatever the state was previously
+            allKnobs[i].rotate() #Rotate image so that it matches what its state says it should look like
+        
 
 def mainGame():
     global score
@@ -290,6 +306,9 @@ def mainGame():
             if event.type == pygame.QUIT:
                 quit()
 
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    undo()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     index = checkClick(event.pos) #Tuple (x,y) for knobs
@@ -307,6 +326,8 @@ def mainGame():
                             Solved = checkWin()
 
                             options.terminalOutput(allKnobs)
+                            #options.prevMoves()
+                            
                             if Solved == True:
                                 ds.blit(youWin,(0,0))
                                 pygame.display.flip()
