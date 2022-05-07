@@ -13,7 +13,7 @@ strtBtns.append(button("3 Knobs", (91.25, 49), (125, 125), mint))
 strtBtns.append(button("4 Knobs", (307.5, 49), (125, 125), mint))
 strtBtns.append(button("5 Knobs", (523.75, 49), (125, 125), mint))
 
-mainBtns.append(button("Reset", (25, 173), (205, 25), mint))
+mainBtns.append(button("Undo", (25, 173), (205, 25), mint))
 mainBtns.append(button("Restart", (255, 173), (205, 25), mint))
 mainBtns.append(button("Quit", (485, 173), (205, 25), mint))
 

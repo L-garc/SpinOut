@@ -5,7 +5,10 @@ pygame.init()
 class Knob:
     def __init__(self, number):
         self.state = 1 #.................................................Vertical, all knobs begin in the vertical position
-        self.img = pygame.image.load('knob.png') #.......................Loads into memory knob image
+        self.img = pygame.image.load('spinOutRealisticKnob.png')#('knob.png') #.......................Loads into memory knob image
+
+        self.img = pygame.transform.scale(self.img, (148,148))
+        
         self.w = 148 #...................................................Image width
         self.h = 148 #...................................................Image Height
         self.x = number*(self.w) #.......................................X position of knob based on order created (first knob created at x pos 0)
@@ -20,9 +23,16 @@ class Knob:
         elif self.state == 0: #Switch from 0 to 1
             self.state = 1
 
-    def rotate(self): #Rotate knob image
-        self.img = pygame.transform.rotate(self.img, 90)
-
+    def rotate(self, restart=False): #Rotate knob image
+        if restart == False:
+            val = 1
+        elif restart == True:
+            val = -1
+            
+        if (self.state == 0):
+            self.img = pygame.transform.rotate(self.img, 90*val) #If want to restart the game and the knob is horizontal, rotate CCW instead of the usual CW
+        elif self.state == 1:
+            self.img = pygame.transform.rotate(self.img, -90)
 class button:
     def __init__(self, label, pos, size, color): #label = "Example Name" pos = (x,y) size = (w,h) color = (r,g,b)
         self.label = label
@@ -45,6 +55,8 @@ class Options:
         self.dispAnswer = False #Shows the steps to solving the game in the terminal
         self.shown = False
 
+        self.prevStates = [] #Saves the previous knob states from each move
+
     def showAnswer(self):
         if ((self.dispAnswer == True) and (self.shown == False)):
             self.shown = True
@@ -58,7 +70,24 @@ class Options:
                 temp.append(knob.state)
                 
             temp.reverse()
+<<<<<<< Updated upstream
             print(*temp)
+=======
+            print(*temp) #The asterisk means print just prints as a list what is in temp
+            self.prevStates.insert(0,temp) #Place at beggining, previous state (so that the previous move is index 1, two moves ago is index 2
+
+    def prevMoves(self, index = None):
+        #This is for retreiving previous knob states
+        if index != None:
+            if len(self.prevStates) > 1:
+                return self.prevStates[index]
+            else:
+                return self.prevStates[0] #Maintain current state
+
+    def popPrevMoves(self, index):
+        if len(self.prevStates) > 1:
+            self.prevStates.pop(index)
+>>>>>>> Stashed changes
 
     def chngOption(self, label):
         if (label == "Teacher / Student"):
